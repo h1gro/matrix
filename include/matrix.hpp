@@ -100,6 +100,9 @@ public:
 
     void print_matrix();
     void filling_matrix();
+
+    size_t get_columns() {return columns;}
+    size_t get_rows   () {return rows;   }
 };
 
 template <typename type>
