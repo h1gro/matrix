@@ -199,28 +199,28 @@ void Matrix<type>::StraightGaussAlgorithm()
 
             if (data[i][j] == 1)
             {
-                std::cout << "------------------------" << std::endl;
-                std::cout << "нашёл строку с единичкой - первым элементом" << std::endl;
+                //std::cout << "------------------------" << std::endl;
+                //std::cout << "нашёл строку с единичкой - первым элементом" << std::endl;
 
                 if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
-                print_matrix();
+                //print_matrix();
                 unit_flag = true;
                 break;
             }
 
             else if (data[i][j] == -1)
             {
-                std::cout << "------------------------" << std::endl;
-                std::cout << "нашёл строку с минус единичкой - первым элементом" << std::endl;
+                //std::cout << "------------------------" << std::endl;
+                //std::cout << "нашёл строку с минус единичкой - первым элементом" << std::endl;
 
                 mull_row_by_num(data[i], (-1));
-                print_matrix();
+                //print_matrix();
 
-                std::cout << "------------------------" << std::endl;
-                std::cout << "свапаю строчки" << std::endl;
+                //std::cout << "------------------------" << std::endl;
+                //std::cout << "свапаю строчки" << std::endl;
 
                 if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
-                print_matrix();
+                //print_matrix();
                 unit_flag = true;
                 break;
             }
@@ -230,29 +230,29 @@ void Matrix<type>::StraightGaussAlgorithm()
         {
             if (fabs(data[j][j]) < EPSILON)
             {
-                std::cout << "------------------------" << std::endl;
-                std::cout << "первую лок строку если нулевая кидаю вниз" << std::endl;
+                //std::cout << "------------------------" << std::endl;
+                //std::cout << "первую лок строку если нулевая кидаю вниз" << std::endl;
                 rows_swap(&data[j], &data[non_zero_elem]);
-                print_matrix();
+                //print_matrix();
             }
 
             if (!unit_flag)
             {
-                std::cout << "------------------------" << std::endl;
-                std::cout << "первый элемент строки делаю единицей" << std::endl;
+                //std::cout << "------------------------" << std::endl;
+                //std::cout << "первый элемент строки делаю единицей" << std::endl;
                 mull_row_by_num(data[j], 1.0 / data[j][j]);
-                print_matrix();
+                //print_matrix();
             }
 
             if (fabs(data[j][j]) > EPSILON)
             {
-                std::cout << " j = " << j << std::endl;
+                //std::cout << " j = " << j << std::endl;
                 for (size_t i = j + 1; i < rows; i++)
                 {
-                    std::cout << "------------------------" << std::endl;
-                    std::cout << "вычитаю из " << i << "-ой строки локальную первую умноженную на коэф " << data[i][j] << std::endl;
+                    //std::cout << "------------------------" << std::endl;
+                    //std::cout << "вычитаю из " << i << "-ой строки локальную первую умноженную на коэф " << data[i][j] << std::endl;
                     rows_addition(data[i], data[j], (-1) * data[i][j]);
-                    print_matrix();
+                    //print_matrix();
                 }
             }
         }
@@ -263,10 +263,10 @@ void Matrix<type>::StraightGaussAlgorithm()
 
     if (fabs(data[columns - 1][columns - 1]) > EPSILON)
     {
-        std::cout << "------------------------" << std::endl;
-        std::cout << "первый элемент строки делаю единицей" << std::endl;
+        //std::cout << "------------------------" << std::endl;
+        //std::cout << "первый элемент строки делаю единицей" << std::endl;
         mull_row_by_num(data[columns - 1], 1.0 / data[columns - 1][columns - 1]);
-        print_matrix();
+        //print_matrix();
     }
 }
 
@@ -277,10 +277,10 @@ void Matrix<type>::ReverseGaussAlgorithm()
     {
         for (int i = j - 1; i >= 0 ; i--)
         {
-            std::cout << "------------------------" << std::endl;
-            std::cout << "удаляю последний элемент строки вычитая из строки самую нижнюю" << std::endl << "j: " << j << "; i: " << i << std::endl;
+            //std::cout << "------------------------" << std::endl;
+            //std::cout << "удаляю последний элемент строки вычитая из строки самую нижнюю" << std::endl << "j: " << j << "; i: " << i << std::endl;
             rows_addition(data[i], data[j], (-1) * data[i][j]);
-            print_matrix();
+            //print_matrix();
         }
     }
 }
@@ -290,7 +290,7 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
 {
     assert(row);
 
-    std::cout << "number : " << number << std::endl;
+    //std::cout << "number : " << number << std::endl;
 
     if (fabs(number) > EPSILON)
     {
@@ -299,9 +299,9 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
             if (fabs(row[i]) > EPSILON)
                 row[i] *= number;
         }
-        std::cout << "old det coef = " << det_coef << std::endl;
+        //std::cout << "old det coef = " << det_coef << std::endl;
         det_coef /= number;
-        std::cout << "det coef = " << det_coef << std::endl;
+        //std::cout << "det coef = " << det_coef << std::endl;
     }
 
     else
@@ -354,7 +354,7 @@ type Matrix<type>::diagonal_determinant()
         determinant *= data[i][i];
     }
 
-    std::cout << determinant << std::endl;
+    //std::cout << determinant << std::endl;
     return determinant * det_coef;
 }
 

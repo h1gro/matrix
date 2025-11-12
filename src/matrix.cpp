@@ -9,7 +9,6 @@ int main()
     Matrix<float> matrix(matrix_size, matrix_size);
 
     matrix.filling_matrix();
-    matrix.print_matrix();
 
     std::cout << matrix.determinant() << std::endl;
 
