@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cassert>
 
-const float EPSILON = 1e-8;
+const float EPSILON = 1e-4;
 
 template <typename type = float >
 class Matrix
@@ -18,14 +18,53 @@ private:
 
 public:
 
+    //constructor with initializer list
+    Matrix(std::initializer_list<std::initializer_list<type>> init_list): columns(init_list.begin()->size()), rows(init_list.size()), det_coef(1)
+    {
+        if (init_list.size() == 0) {return;}
+
+        for (const auto& row : init_list)
+            if (row.size() != columns) {throw std::invalid_argument("All rows must have the same length");}
+
+        data = new type*[rows];
+
+        size_t i = 0;
+        for (const auto& row_list : init_list)
+        {
+            data[i] = new type[columns];
+            size_t j = 0;
+            for (const auto& value : row_list)
+            {
+                data[i][j] = value;
+                j++;
+            }
+            i++;
+        }
+    }
+
     //constructor
-    Matrix(size_t columns, size_t rows) : columns(columns), rows(rows), det_coef(1)
+    Matrix(size_t columns, size_t rows, type** init_data = {}) : columns(columns), rows(rows), det_coef(1)
     {
         data = new type*[rows];
 
-        for (size_t i = 0; i < rows; i++)
+        if (init_data != nullptr)
         {
-            data[i] = new type[columns]{};
+            for (size_t i = 0; i < rows; i++)
+            {
+                data[i] = new type[columns];
+                for (size_t j = 0; j < columns; j++)
+                {
+                    data[i][j] = init_data[i][j];
+                }
+            }
+        }
+
+        else
+        {
+            for (size_t i = 0; i < rows; i++)
+            {
+                data[i] = new type[columns]{};
+            }
         }
     }
 
@@ -129,7 +168,10 @@ type Matrix<type>::determinant()
 
     copy_matrix.GaussAlgorithm();
 
-    return copy_matrix.diagonal_determinant();
+    type determinant = copy_matrix.diagonal_determinant();
+
+    if (fabs(determinant) < EPSILON){return 0;}
+    else {return determinant;}
 }
 
 template <typename type>
@@ -149,6 +191,7 @@ void Matrix<type>::StraightGaussAlgorithm()
 
     for (size_t j = 0; j < columns - 1; j++)
     {
+        std::cout << "@J = " << j << std::endl;
         for (size_t i = j; i < rows; i++)
         {
             if (fabs(data[i][j]) > EPSILON)
@@ -211,14 +254,18 @@ void Matrix<type>::StraightGaussAlgorithm()
                 print_matrix();
             }
         }
+
         zero_flag = true;
         unit_flag = false;
     }
 
-    std::cout << "------------------------" << std::endl;
-    std::cout << "первый элемент строки делаю единицей" << std::endl;
-    mull_row_by_num(data[columns - 1], 1.0 / data[columns - 1][columns - 1]);
-    print_matrix();
+    if (fabs(data[columns - 1][columns - 1]) > EPSILON)
+    {
+        std::cout << "------------------------" << std::endl;
+        std::cout << "первый элемент строки делаю единицей" << std::endl;
+        mull_row_by_num(data[columns - 1], 1.0 / data[columns - 1][columns - 1]);
+        print_matrix();
+    }
 }
 
 template <typename type>

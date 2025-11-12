@@ -8,7 +8,7 @@ enum test_values
     TEST_ROWS    = 3,
 };
 
-TEST (MatrixTest, Constructor)
+TEST (MatrixInterfaceTest, Constructor)
 {
     Matrix<int> matrix(TEST_COLUMNS, TEST_ROWS);
 
@@ -16,7 +16,7 @@ TEST (MatrixTest, Constructor)
     EXPECT_EQ(matrix.get_rows(), TEST_ROWS);
 }
 
-TEST (MatrixTest, CopyConstructor)
+TEST (MatrixInterfaceTest, CopyConstructor)
 {
     Matrix<int> matrix(TEST_COLUMNS, TEST_ROWS);
 
@@ -28,7 +28,7 @@ TEST (MatrixTest, CopyConstructor)
     EXPECT_EQ(copy_matrix.get_rows(),    matrix.get_rows());
 }
 
-TEST (MatrixTest, MoveConstructor)
+TEST (MatrixInterfaceTest, MoveConstructor)
 {
     Matrix<int> matrix(TEST_COLUMNS, TEST_ROWS);
     Matrix<int> move_matrix(std::move(matrix));
@@ -39,7 +39,7 @@ TEST (MatrixTest, MoveConstructor)
     EXPECT_EQ(move_matrix.get_rows(),    TEST_ROWS);
 }
 
-TEST (MatrixTest, CopyAssignment)
+TEST (MatrixInterfaceTest, CopyAssignment)
 {
     Matrix<int> matrix1(TEST_COLUMNS, TEST_ROWS);
     Matrix<int> matrix2(TEST_COLUMNS, TEST_ROWS);
@@ -52,7 +52,7 @@ TEST (MatrixTest, CopyAssignment)
     EXPECT_EQ(matrix1.get_rows(),    matrix2.get_rows());
 }
 
-TEST (MatrixTest, MoveAssignment)
+TEST (MatrixInterfaceTest, MoveAssignment)
 {
     Matrix<int> matrix1(TEST_COLUMNS, TEST_ROWS);
     Matrix<int> matrix2(TEST_COLUMNS, TEST_ROWS);
@@ -63,4 +63,42 @@ TEST (MatrixTest, MoveAssignment)
 
     EXPECT_EQ(matrix2.get_columns(), TEST_COLUMNS);
     EXPECT_EQ(matrix2.get_rows(),    TEST_ROWS);
+}
+
+TEST (MatrixAlgebraTest, Determinant_2x2)
+{
+    Matrix<float> matrix({{1, 1},
+                          {1, 1}});
+
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST (MatrixAlgebraTest, Determinant_3x3)
+{
+    Matrix<float> matrix({{2, 3, 2},
+                          {5, 1, 3},
+                          {2, 2, 3}});
+
+    EXPECT_EQ(matrix.determinant(), -17);
+}
+
+TEST (MatrixAlgebraTest, Determinant_4x4)
+{
+    Matrix<float> matrix({{1, 2, 2, 1},
+                          {9, 5, 6, 0},
+                          {0, 6, 5, 9},
+                          {2, 1, 1, 2}});
+
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST (MatrixAlgebraTest, Determinant_5x5)
+{
+    Matrix<float> matrix({{1, 2, 3, 4, 5},
+                          {2, 3, 4, 5, 1},
+                          {3, 4, 5, 1, 2},
+                          {4, 5, 1, 2, 3},
+                          {5, 1, 2, 3, 4}});
+
+    EXPECT_EQ(matrix.determinant(), 1875);
 }

@@ -29,17 +29,17 @@ else
     BUILD_DIR = $(BUILD)/debug
 endif
 
-#LDFLAGS = -lgtest -lgtest_main -lpthread
+LDFLAGS = -lgtest -lgtest_main -lpthread
 
-all: matrix # matrix_tests
+all: matrix matrix_tests
 
 matrix: src/matrix.cpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) src/matrix.cpp -o $(BUILD_DIR)/matrix
 
-#matrix_tests: src/matrix_tests.cpp include/matrix.hpp
-#	@mkdir -p $(BUILD_DIR)
-#	$(CXX) $(CXXFLAGS) src/matrix_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/matrix_tests
+matrix_tests: src/matrix_tests.cpp include/matrix.hpp
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) src/matrix_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/matrix_tests
 
 debug:
 	$(MAKE) CONFIG=debug
