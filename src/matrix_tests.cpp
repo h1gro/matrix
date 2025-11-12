@@ -65,6 +65,21 @@ TEST (MatrixInterfaceTest, MoveAssignment)
     EXPECT_EQ(matrix2.get_rows(),    TEST_ROWS);
 }
 
+TEST (MatrixAlgebraTest, Determinant_1x1)
+{
+    Matrix<float> matrix({{153}});
+
+    EXPECT_EQ(matrix.determinant(), 153);
+}
+
+TEST (MatrixAlgebraTest, det_E_2x2)
+{
+    Matrix<float> matrix({{1, 0},
+                          {0, 1}});
+
+    EXPECT_EQ(matrix.determinant(), 1);
+}
+
 TEST (MatrixAlgebraTest, Determinant_2x2)
 {
     Matrix<float> matrix({{1, 1},
@@ -85,9 +100,9 @@ TEST (MatrixAlgebraTest, Determinant_3x3)
 TEST (MatrixAlgebraTest, Determinant_4x4)
 {
     Matrix<float> matrix({{1, 2, 2, 1},
-                          {9, 5, 6, 0},
-                          {0, 6, 5, 9},
-                          {2, 1, 1, 2}});
+                          {0, 8, 9, 7},
+                          {5, 5, 5, 5},
+                          {8, 2, 1, 1}});
 
     EXPECT_EQ(matrix.determinant(), 0);
 }

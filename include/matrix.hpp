@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cassert>
 
-const float EPSILON = 1e-4;
+const float EPSILON = 1e-9;
 
 template <typename type = float >
 class Matrix
@@ -191,7 +191,6 @@ void Matrix<type>::StraightGaussAlgorithm()
 
     for (size_t j = 0; j < columns - 1; j++)
     {
-        std::cout << "@J = " << j << std::endl;
         for (size_t i = j; i < rows; i++)
         {
             if (fabs(data[i][j]) > EPSILON)
@@ -203,7 +202,7 @@ void Matrix<type>::StraightGaussAlgorithm()
                 std::cout << "------------------------" << std::endl;
                 std::cout << "нашёл строку с единичкой - первым элементом" << std::endl;
 
-                rows_swap(&data[i], &data[j]);
+                if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
                 print_matrix();
                 unit_flag = true;
                 break;
@@ -220,7 +219,7 @@ void Matrix<type>::StraightGaussAlgorithm()
                 std::cout << "------------------------" << std::endl;
                 std::cout << "свапаю строчки" << std::endl;
 
-                rows_swap(&data[i], &data[j]);
+                if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
                 print_matrix();
                 unit_flag = true;
                 break;
@@ -245,13 +244,16 @@ void Matrix<type>::StraightGaussAlgorithm()
                 print_matrix();
             }
 
-            std::cout << " j = " << j << std::endl;
-            for (size_t i = j + 1; i < rows; i++)
+            if (fabs(data[j][j]) > EPSILON)
             {
-                std::cout << "------------------------" << std::endl;
-                std::cout << "вычитаю из i-ой строки локальную первую умноженную на коэф" << std::endl;
-                rows_addition(data[i], data[j], (-1) * data[i][j]);
-                print_matrix();
+                std::cout << " j = " << j << std::endl;
+                for (size_t i = j + 1; i < rows; i++)
+                {
+                    std::cout << "------------------------" << std::endl;
+                    std::cout << "вычитаю из " << i << "-ой строки локальную первую умноженную на коэф " << data[i][j] << std::endl;
+                    rows_addition(data[i], data[j], (-1) * data[i][j]);
+                    print_matrix();
+                }
             }
         }
 
@@ -297,7 +299,7 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
             if (fabs(row[i]) > EPSILON)
                 row[i] *= number;
         }
-
+        std::cout << "old det coef = " << det_coef << std::endl;
         det_coef /= number;
         std::cout << "det coef = " << det_coef << std::endl;
     }
@@ -368,7 +370,6 @@ bool Matrix<type>::is_matrix_square()
 template <typename type>
 void Matrix<type>::print_matrix()
 {
-    //std::cout << "------------------------" << std::endl;
     for (size_t i = 0; i < rows; i++)
     {
         for (size_t j = 0; j < columns; j++)
