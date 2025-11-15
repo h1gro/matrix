@@ -1,6 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include "../include/matrix.hpp"
+#include "../include/utilits.hpp"
 
 enum test_values
 {
@@ -22,7 +23,7 @@ TEST (MatrixInterfaceTest, CopyConstructor)
 
     matrix::Matrix<int> copy_matrix(matrix);
 
-    //TODO filling
+    EXPECT_EQ(matrix::is_matrices_equal(matrix, copy_matrix), true);
 
     EXPECT_EQ(copy_matrix.get_columns(), matrix.get_columns());
     EXPECT_EQ(copy_matrix.get_rows(),    matrix.get_rows());
@@ -31,9 +32,11 @@ TEST (MatrixInterfaceTest, CopyConstructor)
 TEST (MatrixInterfaceTest, MoveConstructor)
 {
     matrix::Matrix<int> matrix(TEST_COLUMNS, TEST_ROWS);
+    matrix::Matrix<int> copy_matrix(matrix);
+
     matrix::Matrix<int> move_matrix(std::move(matrix));
 
-    //TODO filling
+    EXPECT_EQ(matrix::is_matrices_equal(copy_matrix, move_matrix), true);
 
     EXPECT_EQ(move_matrix.get_columns(), TEST_COLUMNS);
     EXPECT_EQ(move_matrix.get_rows(),    TEST_ROWS);
@@ -44,7 +47,7 @@ TEST (MatrixInterfaceTest, CopyAssignment)
     matrix::Matrix<int> matrix1(TEST_COLUMNS, TEST_ROWS);
     matrix::Matrix<int> matrix2(TEST_COLUMNS, TEST_ROWS);
 
-    //TODO filling
+    EXPECT_EQ(matrix::is_matrices_equal(matrix1, matrix2), true);
 
     matrix2 = matrix1;
 
@@ -55,11 +58,13 @@ TEST (MatrixInterfaceTest, CopyAssignment)
 TEST (MatrixInterfaceTest, MoveAssignment)
 {
     matrix::Matrix<int> matrix1(TEST_COLUMNS, TEST_ROWS);
+    matrix::Matrix<int> copy_matrix(matrix1);
+
     matrix::Matrix<int> matrix2(TEST_COLUMNS, TEST_ROWS);
 
-    //TODO filling
-
     matrix2 = std::move(matrix1);
+
+    EXPECT_EQ(matrix::is_matrices_equal(copy_matrix, matrix2), true);
 
     EXPECT_EQ(matrix2.get_columns(), TEST_COLUMNS);
     EXPECT_EQ(matrix2.get_rows(),    TEST_ROWS);

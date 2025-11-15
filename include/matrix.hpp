@@ -5,11 +5,10 @@
 #include <cmath>
 #include <cassert>
 
-//const float EPSILON = 1e-10;
+//#include "utilits.hpp"
 
 namespace matrix
 {
-
 template<typename type>
 constexpr type EPS()
 {
@@ -151,23 +150,28 @@ public:
         delete [] data;
     }
 
-    void print_matrix            ();
-    void filling_matrix          ();
+    type determinant ();
+
+    //метод класса - для дебага!
+    void print_matrix   () const;
+    void GaussAlgorithm (); //хотим уметь применять алгоритм гаусса для приведения матрицы к даигональному виду без вычисления детерминанта
+
+    size_t get_columns () const {return columns;}
+    size_t get_rows    () const {return rows;   }
+    type** get_data    () const {return data;   }
+
+    bool is_matrix_square () const;
+
+private:
+    // методы - этапы алгоритма Гаусса не обязательно добавлять в public, пусть реализация алгоритма Гаусса будет скрыта
     void StraightGaussAlgorithm  ();
     void ReverseGaussAlgorithm   ();
-    void GaussAlgorithm          ();
 
     void mull_row_by_num (type* row, type number);
     void rows_addition   (type* row1, type* row2, type multiply_coefficient);
     void rows_swap       (type** row1, type** row2);
 
     type diagonal_determinant ();
-    type determinant          ();
-
-    bool is_matrix_square ();
-
-    size_t get_columns () {return columns;}
-    size_t get_rows    () {return rows;   }
 };
 
 template <typename type>
@@ -403,7 +407,7 @@ type Matrix<type>::diagonal_determinant()
 }
 
 template <typename type>
-bool Matrix<type>::is_matrix_square()
+bool Matrix<type>::is_matrix_square() const
 {
     if (columns == rows)
         return true;
@@ -412,7 +416,7 @@ bool Matrix<type>::is_matrix_square()
 }
 
 template <typename type>
-void Matrix<type>::print_matrix()
+void Matrix<type>::print_matrix() const
 {
     for (size_t i = 0; i < rows; i++)
     {
@@ -421,18 +425,6 @@ void Matrix<type>::print_matrix()
             std::cout << data[i][j]  << "\t";
         }
         std::cout << std::endl;
-    }
-}
-
-template <typename type>
-void Matrix<type>::filling_matrix()
-{
-    for (size_t i = 0; i < rows; i++)
-    {
-        for (size_t j = 0; j < columns; j++)
-        {
-            std::cin >> data[i][j];
-        }
     }
 }
 }

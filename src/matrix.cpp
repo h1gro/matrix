@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../include/matrix.hpp"
+#include "../include/utilits.hpp"
 
 int main()
 {
@@ -8,7 +9,9 @@ int main()
 
     matrix::Matrix<long double> matrix(matrix_size, matrix_size);
 
-    matrix.filling_matrix();
+    matrix::filling_matrix(matrix);
+
+    matrix::print_matrix(matrix);
 
     std::cout << matrix.determinant() << std::endl;
 

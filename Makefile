@@ -33,7 +33,7 @@ LDFLAGS = -lgtest -lgtest_main -lpthread
 
 all: matrix matrix_tests
 
-matrix: src/matrix.cpp include/matrix.hpp
+matrix: src/matrix.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) src/matrix.cpp -o $(BUILD_DIR)/matrix
 
