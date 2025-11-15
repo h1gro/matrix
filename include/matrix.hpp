@@ -5,8 +5,6 @@
 #include <cmath>
 #include <cassert>
 
-//#include "utilits.hpp"
-
 namespace matrix
 {
 template<typename type>
@@ -77,7 +75,7 @@ public:
     }
 
     //copy constructor
-    Matrix(const Matrix<type>& original_matrix) : columns(original_matrix.columns), rows(original_matrix.rows), det_coef(1)
+    Matrix(const Matrix& original_matrix) : columns(original_matrix.columns), rows(original_matrix.rows), det_coef(1)
     {
         data = new type*[rows];
 
@@ -90,7 +88,7 @@ public:
     }
 
     //move constructor
-    Matrix(Matrix<type>&& original_matrix) : columns(original_matrix.columns), rows(original_matrix.rows), data(original_matrix.data), det_coef(1)
+    Matrix(Matrix&& original_matrix) noexcept : columns(original_matrix.columns), rows(original_matrix.rows), data(original_matrix.data), det_coef(1)
     {
         original_matrix.data    = nullptr;
         original_matrix.columns = 0;
@@ -98,7 +96,7 @@ public:
     }
 
     //copy assignment
-    Matrix& operator=(const Matrix<type>& original_matrix)
+    Matrix& operator=(const Matrix& original_matrix)
     {
         if ((original_matrix.columns == columns) &&
             (original_matrix.rows    == rows)    &&
@@ -118,7 +116,7 @@ public:
     }
 
     //move assignment
-    Matrix& operator=(Matrix<type>&& original_matrix)
+    Matrix& operator=(Matrix&& original_matrix) noexcept
     {
         if ((original_matrix.columns == this->columns) &&
             (original_matrix.rows    == this->rows)    &&

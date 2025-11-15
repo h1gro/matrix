@@ -6,9 +6,7 @@
 namespace matrix
 {
 
-// template <typename type>
-// void print_matrix(const Matrix<type>& matrix);
-
+//TODO перегрузить операторы <<, >>
 template <typename type>
 void print_matrix(const Matrix<type>& matrix)
 {
@@ -73,4 +71,35 @@ bool is_matrices_equal(const Matrix<type>& matrix1, const Matrix<type>& matrix2)
 
     return true;
 }
+
+template <typename type>
+Matrix<type> matrices_sum(const Matrix<type>& matrix1, const Matrix<type>& matrix2)
+{
+    type** data1 = matrix1.get_data();
+    type** data2 = matrix2.get_data();
+
+    size_t columns1 = matrix1.get_columns();
+    size_t rows1    = matrix1.get_rows();
+
+    size_t columns2 = matrix2.get_columns();
+    size_t rows2    = matrix2.get_rows();
+
+    assert((data1 != nullptr) && (data2 != nullptr));
+    assert(columns1 == columns2);
+    assert(rows1    == rows2);
+
+    Matrix<type> matrix_sum(columns1, rows1);
+    type** data_sum = matrix_sum.get_data();
+
+    for (size_t i = 0; i < rows1; i++)
+    {
+        for (size_t j = 0; j < columns1; j++)
+        {
+            data_sum[i][j] = data1[i][j] + data2[i][j];
+        }
+    }
+
+    return matrix_sum;
+}
+
 }
