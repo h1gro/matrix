@@ -4,9 +4,11 @@
 #include <cmath>
 #include <cassert>
 
-const float EPSILON = 1e-6;
+const float EPSILON = 1e-10;
 
-template <typename type = float >
+namespace matrix
+{
+template <typename type = long double >
 class Matrix
 {
 private:
@@ -151,13 +153,13 @@ public:
     void rows_addition   (type* row1, type* row2, float multiply_coefficient);
     void rows_swap       (type** row1, type** row2);
 
-    type diagonal_determinant();
-    type determinant         ();
+    type diagonal_determinant ();
+    type determinant          ();
 
-    bool is_matrix_square();
+    bool is_matrix_square ();
 
-    size_t get_columns() {return columns;}
-    size_t get_rows   () {return rows;   }
+    size_t get_columns () {return columns;}
+    size_t get_rows    () {return rows;   }
 };
 
 template <typename type>
@@ -176,6 +178,9 @@ type Matrix<type>::determinant()
 template <typename type>
 void Matrix<type>::GaussAlgorithm()
 {
+    //Алгоритм приведения матрицы к E, путем последовательного применения
+    //прямого хода Гаууса и обратного
+
     StraightGaussAlgorithm();
     ReverseGaussAlgorithm ();
 }
@@ -183,68 +188,91 @@ void Matrix<type>::GaussAlgorithm()
 template <typename type>
 void Matrix<type>::StraightGaussAlgorithm()
 {
-    bool unit_flag = false;
-    bool zero_flag = true;
+    //Алгоритм приведения матрицы к ступенчатому виду
+
+    //default состояния флагов
+    bool unit_flag = false; //показывает есть ли единица в столбце
+    bool zero_flag = true;  //показывает все ли элементы столбцы - нули
 
     size_t non_zero_elem = 0;
 
     for (size_t j = 0; j < columns - 1; j++)
     {
+        //перехожу к подматрице jxj
         for (size_t i = j; i < rows; i++)
         {
+            //проверяем есть ли в текущем столбце ненулевой элемент, если нет, то флаг zero_flag останется выставленным
+            //в true [zero_flag = true - столбец весь из нулей, = false - есть хотя бы один ненулевой элемент]
             if (fabs(data[i][j]) > EPSILON)
             {
-                non_zero_elem = i;
+                non_zero_elem = i; //запоминаем ненулевой элемент (вдруг он будет единственным)
                 zero_flag = false;
             }
 
+            //нашли строку в подматрице с первым элементом - единичкой
             if (data[i][j] == 1)
             {
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "нашёл строку с единичкой - первым элементом" << std::endl;
 
+                //перемещаем строку с первым элементом - единичкой наверх подматрицы
                 if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
                 //print_matrix();
+
+                //флаг - найдена строка с единицей
                 unit_flag = true;
                 break;
             }
 
+            //аналогично со строкой с отрицательной единицей
             else if (data[i][j] == -1)
             {
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "нашёл строку с минус единичкой - первым элементом" << std::endl;
 
+                //домножаем всю строку на минус единицу
                 mull_row_by_num(data[i], (-1));
                 //print_matrix();
 
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "свапаю строчки" << std::endl;
 
+                //перемещаем строку с первым элементом - единичкой наверх подматрицы
                 if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
                 //print_matrix();
+
+                //флаг - найдена строка с единицей
                 unit_flag = true;
                 break;
             }
         }
 
+        //если есть хотя бы один ненулевой элемент, то выполнится тело if
         if (!zero_flag)
         {
             if (fabs(data[j][j]) < EPSILON)
             {
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "первую лок строку если нулевая кидаю вниз" << std::endl;
+
+                //перемещаем строку с нулевым элементом в самый низ подматрицы
                 rows_swap(&data[j], &data[non_zero_elem]);
                 //print_matrix();
             }
 
+            //если в столбце нет единицы то выполнится тело if
             if (!unit_flag)
             {
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "первый элемент строки делаю единицей" << std::endl;
+
+                //домножаем всю строку на коэф, чтоб первый элемент был единицей
                 mull_row_by_num(data[j], 1.0 / data[j][j]);
                 //print_matrix();
             }
 
+            //зануляем все элементы столбца (кроме первого) путем сложения каждой строки с первой строкой подматрицы,
+            //умноженной на некоторый коэф, таким образом получаем столбец (1 0 0 0 ... 0)^T
             if (fabs(data[j][j]) > EPSILON)
             {
                 //std::cout << " j = " << j << std::endl;
@@ -258,10 +286,12 @@ void Matrix<type>::StraightGaussAlgorithm()
             }
         }
 
+        // возвращаем флаги в default состояние
         zero_flag = true;
         unit_flag = false;
     }
 
+    //последний элемент главной диагонали привожу к единице, если он не нулевой
     if (fabs(data[columns - 1][columns - 1]) > EPSILON)
     {
         //std::cout << "------------------------" << std::endl;
@@ -274,6 +304,8 @@ void Matrix<type>::StraightGaussAlgorithm()
 template <typename type>
 void Matrix<type>::ReverseGaussAlgorithm()
 {
+    //Алгоритм приведения ступенчатой матрицы к диагональной
+
     for (int j = columns - 1; j >= 0; j--)
     {
         for (int i = j - 1; i >= 0 ; i--)
@@ -301,7 +333,10 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
                 row[i] *= number;
         }
         //std::cout << "old det coef = " << det_coef << std::endl;
+
+        //домножение строки матрицы на число, увеличивает детерминант матрицы в это число раз
         det_coef /= number;
+
         //std::cout << "det coef = " << det_coef << std::endl;
     }
 
@@ -333,6 +368,7 @@ void Matrix<type>::rows_swap(type** row1, type** row2)
                     *row1 = *row2;
                     *row2 = fictitious_row;
 
+    //swap строк изменяет знак детерминанта матрицы
     det_coef *= (-1);
 }
 
@@ -390,5 +426,6 @@ void Matrix<type>::filling_matrix()
             std::cin >> data[i][j];
         }
     }
+}
 }
 
