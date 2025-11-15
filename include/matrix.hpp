@@ -1,21 +1,29 @@
 #pragma once
 
 #include <algorithm>
+#include <limits>
 #include <cmath>
 #include <cassert>
 
-const float EPSILON = 1e-10;
+//const float EPSILON = 1e-10;
 
 namespace matrix
 {
-template <typename type = long double >
+
+template<typename type>
+constexpr type EPS()
+{
+    return static_cast<type>(100) * std::numeric_limits<type>::epsilon();
+}
+
+template <typename type = double >
 class Matrix
 {
 private:
 
     size_t columns, rows;
     type** data;
-    float  det_coef;
+    type   det_coef;
 
 public:
 
@@ -149,8 +157,8 @@ public:
     void ReverseGaussAlgorithm   ();
     void GaussAlgorithm          ();
 
-    void mull_row_by_num (type* row, float number);
-    void rows_addition   (type* row1, type* row2, float multiply_coefficient);
+    void mull_row_by_num (type* row, type number);
+    void rows_addition   (type* row1, type* row2, type multiply_coefficient);
     void rows_swap       (type** row1, type** row2);
 
     type diagonal_determinant ();
@@ -171,7 +179,7 @@ type Matrix<type>::determinant()
 
     type determinant = copy_matrix.diagonal_determinant();
 
-    if (fabs(determinant) < EPSILON){return 0;}
+    if (fabs(determinant) < EPS<type>()){return 0;}
     else {return determinant;}
 }
 
@@ -203,7 +211,7 @@ void Matrix<type>::StraightGaussAlgorithm()
         {
             //проверяем есть ли в текущем столбце ненулевой элемент, если нет, то флаг zero_flag останется выставленным
             //в true [zero_flag = true - столбец весь из нулей, = false - есть хотя бы один ненулевой элемент]
-            if (fabs(data[i][j]) > EPSILON)
+            if (fabs(data[i][j]) > EPS<type>())
             {
                 non_zero_elem = i; //запоминаем ненулевой элемент (вдруг он будет единственным)
                 zero_flag = false;
@@ -250,7 +258,7 @@ void Matrix<type>::StraightGaussAlgorithm()
         //если есть хотя бы один ненулевой элемент, то выполнится тело if
         if (!zero_flag)
         {
-            if (fabs(data[j][j]) < EPSILON)
+            if (fabs(data[j][j]) < EPS<type>())
             {
                 //std::cout << "------------------------" << std::endl;
                 //std::cout << "первую лок строку если нулевая кидаю вниз" << std::endl;
@@ -273,7 +281,7 @@ void Matrix<type>::StraightGaussAlgorithm()
 
             //зануляем все элементы столбца (кроме первого) путем сложения каждой строки с первой строкой подматрицы,
             //умноженной на некоторый коэф, таким образом получаем столбец (1 0 0 0 ... 0)^T
-            if (fabs(data[j][j]) > EPSILON)
+            if (fabs(data[j][j]) > EPS<type>())
             {
                 //std::cout << " j = " << j << std::endl;
                 for (size_t i = j + 1; i < rows; i++)
@@ -292,7 +300,7 @@ void Matrix<type>::StraightGaussAlgorithm()
     }
 
     //последний элемент главной диагонали привожу к единице, если он не нулевой
-    if (fabs(data[columns - 1][columns - 1]) > EPSILON)
+    if (fabs(data[columns - 1][columns - 1]) > EPS<type>())
     {
         //std::cout << "------------------------" << std::endl;
         //std::cout << "первый элемент строки делаю единицей" << std::endl;
@@ -319,17 +327,17 @@ void Matrix<type>::ReverseGaussAlgorithm()
 }
 
 template <typename type>
-void Matrix<type>::mull_row_by_num(type* row, float number)
+void Matrix<type>::mull_row_by_num(type* row, type number)
 {
     assert(row);
 
     //std::cout << "number : " << number << std::endl;
 
-    if (fabs(number) > EPSILON)
+    if (fabs(number) > EPS<type>())
     {
         for (size_t i = 0; i < columns; i++)
         {
-            if (fabs(row[i]) > EPSILON)
+            if (fabs(row[i]) > EPS<type>())
                 row[i] *= number;
         }
         //std::cout << "old det coef = " << det_coef << std::endl;
@@ -347,7 +355,7 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
 }
 
 template <typename type>
-void Matrix<type>::rows_addition(type* row1, type* row2, float multiply_coefficient)
+void Matrix<type>::rows_addition(type* row1, type* row2, type multiply_coefficient)
 {
     assert(row1);
     assert(row2);
