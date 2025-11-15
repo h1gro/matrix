@@ -1,19 +1,18 @@
-#ifndef MATRIX
-#define MATRIX
+#pragma once
 
 #include <algorithm>
 #include <cmath>
 #include <cassert>
 
-const float EPSILON = 1e-9;
+const float EPSILON = 1e-6;
 
 template <typename type = float >
 class Matrix
 {
 private:
 
-    type** data;
     size_t columns, rows;
+    type** data;
     float  det_coef;
 
 public:
@@ -149,7 +148,7 @@ public:
     void GaussAlgorithm          ();
 
     void mull_row_by_num (type* row, float number);
-    void rows_addition   (type* row1, type* row2, auto multiply_coefficient);
+    void rows_addition   (type* row1, type* row2, float multiply_coefficient);
     void rows_swap       (type** row1, type** row2);
 
     type diagonal_determinant();
@@ -194,8 +193,10 @@ void Matrix<type>::StraightGaussAlgorithm()
         for (size_t i = j; i < rows; i++)
         {
             if (fabs(data[i][j]) > EPSILON)
+            {
                 non_zero_elem = i;
                 zero_flag = false;
+            }
 
             if (data[i][j] == 1)
             {
@@ -308,11 +309,10 @@ void Matrix<type>::mull_row_by_num(type* row, float number)
     {
         std::cerr << "We must not multiply by zero!" << std::endl;
     }
-
 }
 
 template <typename type>
-void Matrix<type>::rows_addition(type* row1, type* row2, auto multiply_coefficient)
+void Matrix<type>::rows_addition(type* row1, type* row2, float multiply_coefficient)
 {
     assert(row1);
     assert(row2);
@@ -392,4 +392,3 @@ void Matrix<type>::filling_matrix()
     }
 }
 
-#endif
