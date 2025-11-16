@@ -13,7 +13,7 @@ constexpr type EPS()
     return static_cast<type>(100) * std::numeric_limits<type>::epsilon();
 }
 
-template <typename type = double >
+template <typename type = long double >
 class Matrix
 {
 private:

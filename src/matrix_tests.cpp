@@ -114,7 +114,6 @@ TEST (MatrixAlgebraTest, Determinant_4x4)
 
 TEST (MatrixAlgebraTest, Determinant_5x5)
 {
-    //TODO ? float <-> double
     matrix::Matrix<float> matrix({{1, 2, 3, 4, 5},
                                   {2, 3, 4, 5, 1},
                                   {3, 4, 5, 1, 2},
@@ -150,4 +149,261 @@ TEST (MatrixAlgebraTest, MatricesSum)
     matrix::Matrix<double> matrix_sum = std::move(matrix::matrices_sum(matrix1, matrix2));
 
     EXPECT_EQ(is_matrices_equal(matrix_sum, matrix3), true);
+}
+
+TEST(MatrixAlgebraTest, Determinant_1x1_Zero) {
+    matrix::Matrix<double> matrix({{0}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_2x2_Negative) {
+    matrix::Matrix<double> matrix({{-1, 2},
+                                  {3, -4}});
+    EXPECT_EQ(matrix.determinant(), -2);
+}
+
+TEST(MatrixAlgebraTest, Determinant_2x2_Zero) {
+    matrix::Matrix<double> matrix({{1, 2},
+                                  {2, 4}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_3x3_Positive) {
+    matrix::Matrix<double> matrix({{2, 1, 3},
+                                  {1, 0, 2},
+                                  {3, 2, 1}});
+    EXPECT_EQ(matrix.determinant(), 3);
+}
+
+TEST(MatrixAlgebraTest, Determinant_3x3_Identity) {
+    matrix::Matrix<double> matrix({{1, 0, 0},
+                                  {0, 1, 0},
+                                  {0, 0, 1}});
+    EXPECT_EQ(matrix.determinant(), 1);
+}
+
+TEST(MatrixAlgebraTest, Determinant_3x3_UpperTriangular) {
+    matrix::Matrix<double> matrix({{2, 1, 4},
+                                  {0, 3, 1},
+                                  {0, 0, 5}});
+    EXPECT_EQ(matrix.determinant(), 30);
+}
+
+TEST(MatrixAlgebraTest, Determinant_3x3_LowerTriangular) {
+    matrix::Matrix<double> matrix({{2, 0, 0},
+                                  {1, 3, 0},
+                                  {4, 2, 5}});
+    EXPECT_EQ(matrix.determinant(), 30);
+}
+
+TEST(MatrixAlgebraTest, Determinant_4x4_Identity) {
+    matrix::Matrix<double> matrix({{1, 0, 0, 0},
+                                  {0, 1, 0, 0},
+                                  {0, 0, 1, 0},
+                                  {0, 0, 0, 1}});
+    EXPECT_EQ(matrix.determinant(), 1);
+}
+
+TEST(MatrixAlgebraTest, Determinant_4x4_Zero) {
+    matrix::Matrix<double> matrix({{1, 2, 3, 4},
+                                  {2, 4, 6, 8},
+                                  {3, 6, 9, 12},
+                                  {4, 8, 12, 16}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_4x4_Negative) {
+    matrix::Matrix<double> matrix({{-1, 2, -3, 4},
+                                  {1, -2, 3, -4},
+                                  {2, -1, 4, -3},
+                                  {3, -4, 1, -2}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_4x4_Triangular) {
+    matrix::Matrix<double> matrix({{2, 0, 0, 0},
+                                  {1, 3, 0, 0},
+                                  {4, 2, 1, 0},
+                                  {3, 1, 2, 5}});
+    EXPECT_EQ(matrix.determinant(), 30);
+}
+
+TEST(MatrixAlgebraTest, Determinant_4x4_Block) {
+    matrix::Matrix<double> matrix({{1, 2, 0, 0},
+                                  {3, 4, 0, 0},
+                                  {0, 0, 2, 1},
+                                  {0, 0, 3, 5}});
+    EXPECT_EQ(matrix.determinant(), -14);
+}
+
+TEST(MatrixAlgebraTest, Determinant_5x5_Identity)
+{
+    matrix::Matrix<double> matrix({{1, 0, 0, 0, 0},
+                                  {0, 1, 0, 0, 0},
+                                  {0, 0, 1, 0, 0},
+                                  {0, 0, 0, 1, 0},
+                                  {0, 0, 0, 0, 1}});
+    EXPECT_EQ(matrix.determinant(), 1);
+}
+
+TEST(MatrixAlgebraTest, Determinant_5x5_Zero) {
+    matrix::Matrix<double> matrix({{1, 2, 3, 4, 5},
+                                  {2, 4, 6, 8, 10},
+                                  {3, 6, 9, 12, 15},
+                                  {4, 8, 12, 16, 20},
+                                  {5, 10, 15, 20, 25}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_5x5_Triangular)
+{
+    matrix::Matrix<double> matrix({{2, 0, 0, 0, 0},
+                                  {1, 3, 0, 0, 0},
+                                  {4, 2, 1, 0, 0},
+                                  {3, 1, 2, 5, 0},
+                                  {0, 2, 1, 3, 4}});
+    EXPECT_EQ(matrix.determinant(), 120);
+}
+
+TEST(MatrixAlgebraTest, Determinant_6x6)
+{
+    matrix::Matrix<double> matrix({{1, 0, 0, 0, 0, 0},
+                                  {0, 2, 0, 0, 0, 0},
+                                  {0, 0, 3, 0, 0, 0},
+                                  {0, 0, 0, 4, 0, 0},
+                                  {0, 0, 0, 0, 5, 0},
+                                  {0, 0, 0, 0, 0, 6}});
+    EXPECT_EQ(matrix.determinant(), 720);
+}
+
+TEST(MatrixAlgebraTest, Determinant_6x6_ZeroRow) {
+    matrix::Matrix<double> matrix({{1, 2, 3, 4, 5, 6},
+                                  {2, 3, 4, 5, 6, 7},
+                                  {3, 4, 5, 6, 7, 8},
+                                  {4, 5, 6, 7, 8, 9},
+                                  {5, 6, 7, 8, 9, 10},
+                                  {0, 0, 0, 0, 0, 0}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_6x6_Toeplitz) {
+    matrix::Matrix<double> matrix({{2, 1, 0, 0, 0, 0},
+                                  {3, 2, 1, 0, 0, 0},
+                                  {0, 3, 2, 1, 0, 0},
+                                  {0, 0, 3, 2, 1, 0},
+                                  {0, 0, 0, 3, 2, 1},
+                                  {0, 0, 0, 0, 3, 2}});
+    EXPECT_EQ(matrix.determinant(), 13);
+}
+
+TEST(MatrixAlgebraTest, Determinant_6x6_Circulant)
+{
+    matrix::Matrix<double> matrix({{1, 2, 3, 4, 5, 6},
+                                   {6, 1, 2, 3, 4, 5},
+                                   {5, 6, 1, 2, 3, 4},
+                                   {4, 5, 6, 1, 2, 3},
+                                   {3, 4, 5, 6, 1, 2},
+                                   {2, 3, 4, 5, 6, 1}});
+    EXPECT_EQ(matrix.determinant(), -27216);
+}
+
+TEST(MatrixAlgebraTest, Determinant_7x7)
+{
+    matrix::Matrix<double> matrix({{1, 0, 0, 0, 0, 0, 0},
+                                   {0, 2, 0, 0, 0, 0, 0},
+                                   {0, 0, 1, 0, 0, 0, 0},
+                                   {0, 0, 0, 3, 0, 0, 0},
+                                   {0, 0, 0, 0, 1, 0, 0},
+                                   {0, 0, 0, 0, 0, 4, 0},
+                                   {0, 0, 0, 0, 0, 0, 1}});
+
+    EXPECT_EQ(matrix.determinant(), 24);
+}
+
+TEST(MatrixAlgebraTest, Determinant_7x7_Ones)
+{
+    matrix::Matrix<double> matrix({{1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1},
+                                  {1, 1, 1, 1, 1, 1, 1}});
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_10x10_BlockDiagonal)
+{
+    matrix::Matrix<double> matrix({
+        {1, 2, 3, 4, 5, 6, 0, 0, 0, 0},
+        {6, 1, 2, 3, 4, 5, 0, 0, 0, 0},
+        {5, 6, 1, 2, 3, 4, 0, 0, 0, 0},
+        {4, 5, 6, 1, 2, 3, 0, 0, 0, 0},
+        {3, 4, 5, 6, 1, 2, 0, 0, 0, 0},
+        {2, 3, 4, 5, 6, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 2, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 3, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 6}
+    });
+
+    EXPECT_EQ(matrix.determinant(), -979776);
+}
+
+TEST(MatrixAlgebraTest, Determinant_100x100_Zero)
+{
+    matrix::Matrix<double> matrix(100, 100);
+
+    double** data = matrix.get_data();
+
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            data[i][j] = 0.0;
+        }
+    }
+    EXPECT_EQ(matrix.determinant(), 0.0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_100x100_E)
+{
+    matrix::Matrix<double> matrix(100, 100);
+
+    double** data = matrix.get_data();
+
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            if (i == j)
+                data[i][j] = 1;
+        }
+    }
+    EXPECT_EQ(matrix.determinant(), 1);
+}
+
+TEST(MatrixAlgebraTest, Determinant_1000x1000_Zero)
+{
+    matrix::Matrix<double> matrix(1000, 1000);
+
+    double** data = matrix.get_data();
+
+    for (int i = 0; i < 1000; i++) {
+        for (int j = 0; j < 1000; j++) {
+            data[i][j] = 0;
+        }
+    }
+    EXPECT_EQ(matrix.determinant(), 0);
+}
+
+TEST(MatrixAlgebraTest, Determinant_1000x1000_E)
+{
+    matrix::Matrix<double> matrix(1000, 1000);
+
+    double** data = matrix.get_data();
+
+    for (int i = 0; i < 1000; i++) {
+        for (int j = 0; j < 1000; j++) {
+            if (i == j)
+                data[i][j] = 1;
+        }
+    }
+    EXPECT_EQ(matrix.determinant(), 1);
 }
