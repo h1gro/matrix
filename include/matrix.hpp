@@ -177,7 +177,7 @@ type Matrix<type>::determinant()
 {
     Matrix copy_matrix(*this);
 
-    copy_matrix.GaussAlgorithm();
+    copy_matrix.StraightGaussAlgorithm();
 
     type determinant = copy_matrix.diagonal_determinant();
 
@@ -195,122 +195,47 @@ void Matrix<type>::GaussAlgorithm()
     ReverseGaussAlgorithm ();
 }
 
+//Прямой ход Гаусса
 template <typename type>
 void Matrix<type>::StraightGaussAlgorithm()
 {
-    //Алгоритм приведения матрицы к ступенчатому виду
+    // Прямой ход Гаусса -> верхнетреугольная матрица
+    const size_t n = std::min(rows, columns);
 
-    //default состояния флагов
-    bool unit_flag = false; //показывает есть ли единица в столбце
-    bool zero_flag = true;  //показывает все ли элементы столбцы - нули
-
-    size_t non_zero_elem = 0;
-
-    for (size_t j = 0; j < columns - 1; j++)
+    for (size_t j = 0; j < n; ++j)
     {
-        //перехожу к подматрице jxj
-        for (size_t i = j; i < rows; i++)
+        size_t piv = j;
+        type max_abs = std::fabs(data[j][j]);
+
+        for (size_t i = j + 1; i < rows; ++i)
         {
-            //проверяем есть ли в текущем столбце ненулевой элемент, если нет, то флаг zero_flag останется выставленным
-            //в true [zero_flag = true - столбец весь из нулей, = false - есть хотя бы один ненулевой элемент]
-            if (fabs(data[i][j]) > EPS<type>())
-            {
-                non_zero_elem = i; //запоминаем ненулевой элемент (вдруг он будет единственным)
-                zero_flag = false;
-            }
-
-            //нашли строку в подматрице с первым элементом - единичкой
-            if (data[i][j] == 1)
-            {
-                //std::cout << "------------------------" << std::endl;
-                //std::cout << "нашёл строку с единичкой - первым элементом" << std::endl;
-
-                //перемещаем строку с первым элементом - единичкой наверх подматрицы
-                if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
-                //print_matrix();
-
-                //флаг - найдена строка с единицей
-                unit_flag = true;
-                break;
-            }
-
-            //аналогично со строкой с отрицательной единицей
-            else if (data[i][j] == -1)
-            {
-                //std::cout << "------------------------" << std::endl;
-                //std::cout << "нашёл строку с минус единичкой - первым элементом" << std::endl;
-
-                //домножаем всю строку на минус единицу
-                mull_row_by_num(data[i], (-1));
-                //print_matrix();
-
-                //std::cout << "------------------------" << std::endl;
-                //std::cout << "свапаю строчки" << std::endl;
-
-                //перемещаем строку с первым элементом - единичкой наверх подматрицы
-                if (data[j][j] != 1) {rows_swap(&data[i], &data[j]);}
-                //print_matrix();
-
-                //флаг - найдена строка с единицей
-                unit_flag = true;
-                break;
-            }
+            const type v = std::fabs(data[i][j]);
+            if (v > max_abs) { max_abs = v; piv = i; }
         }
 
-        //если есть хотя бы один ненулевой элемент, то выполнится тело if
-        if (!zero_flag)
+        // столбец почти нулевой — пропускаем
+        if (max_abs <= EPS<type>()){continue;}
+
+        if (piv != j)
         {
-            if (fabs(data[j][j]) < EPS<type>())
-            {
-                //std::cout << "------------------------" << std::endl;
-                //std::cout << "первую лок строку если нулевая кидаю вниз" << std::endl;
-
-                //перемещаем строку с нулевым элементом в самый низ подматрицы
-                rows_swap(&data[j], &data[non_zero_elem]);
-                //print_matrix();
-            }
-
-            //если в столбце нет единицы то выполнится тело if
-            if (!unit_flag)
-            {
-                //std::cout << "------------------------" << std::endl;
-                //std::cout << "первый элемент строки делаю единицей" << std::endl;
-
-                //домножаем всю строку на коэф, чтоб первый элемент был единицей
-                mull_row_by_num(data[j], 1.0 / data[j][j]);
-                //print_matrix();
-            }
-
-            //зануляем все элементы столбца (кроме первого) путем сложения каждой строки с первой строкой подматрицы,
-            //умноженной на некоторый коэф, таким образом получаем столбец (1 0 0 0 ... 0)^T
-            if (fabs(data[j][j]) > EPS<type>())
-            {
-                //std::cout << " j = " << j << std::endl;
-                for (size_t i = j + 1; i < rows; i++)
-                {
-                    //std::cout << "------------------------" << std::endl;
-                    //std::cout << "вычитаю из " << i << "-ой строки локальную первую умноженную на коэф " << data[i][j] << std::endl;
-                    rows_addition(data[i], data[j], (-1) * data[i][j]);
-                    //print_matrix();
-                }
-            }
+            rows_swap(&data[piv], &data[j]); // det_coef *= -1
         }
 
-        // возвращаем флаги в default состояние
-        zero_flag = true;
-        unit_flag = false;
-    }
+        const type pivot = data[j][j];
 
-    //последний элемент главной диагонали привожу к единице, если он не нулевой
-    if (fabs(data[columns - 1][columns - 1]) > EPS<type>())
-    {
-        //std::cout << "------------------------" << std::endl;
-        //std::cout << "первый элемент строки делаю единицей" << std::endl;
-        mull_row_by_num(data[columns - 1], 1.0 / data[columns - 1][columns - 1]);
-        //print_matrix();
+        for (size_t i = j + 1; i < rows; ++i)
+        {
+            if (std::fabs(data[i][j]) <= EPS<type>())
+                continue;
+
+            const type factor = -data[i][j] / pivot;
+            rows_addition(data[i], data[j], factor);
+            data[i][j] = static_cast<type>(0);
+        }
     }
 }
 
+//Обратный ход Гаусса, для вычисления детерминанта в нём нет необходимости
 template <typename type>
 void Matrix<type>::ReverseGaussAlgorithm()
 {
@@ -335,25 +260,20 @@ void Matrix<type>::mull_row_by_num(type* row, type number)
 
     //std::cout << "number : " << number << std::endl;
 
-    if (fabs(number) > EPS<type>())
+    if (std::fabs(number) <= EPS<type>())
     {
-        for (size_t i = 0; i < columns; i++)
-        {
-            if (fabs(row[i]) > EPS<type>())
-                row[i] *= number;
-        }
-        //std::cout << "old det coef = " << det_coef << std::endl;
-
-        //домножение строки матрицы на число, увеличивает детерминант матрицы в это число раз
-        det_coef /= number;
-
-        //std::cout << "det coef = " << det_coef << std::endl;
+        std::cerr << "We must not multiply by zero!\n";
+        return;
     }
 
-    else
+    for (size_t i = 0; i < columns; ++i)
     {
-        std::cerr << "We must not multiply by zero!" << std::endl;
+        row[i] *= number;
     }
+
+    det_coef /= number;
+
+    //std::cout << "det coef = " << det_coef << std::endl;
 }
 
 template <typename type>
