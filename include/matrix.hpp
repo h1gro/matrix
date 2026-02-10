@@ -25,91 +25,109 @@ private:
 public:
 
     //constructor with initializer list
-    Matrix(std::initializer_list<std::initializer_list<type>> init_list): columns(init_list.begin()->size()), rows(init_list.size()), det_coef(1)
+    Matrix(std::initializer_list<std::initializer_list<type>> init_list): columns(init_list.size() ? init_list.begin()->size() : 0), rows(init_list.size()), data(nullptr), det_coef(1)
     {
         if (init_list.size() == 0) {return;}
 
         for (const auto& row : init_list)
             if (row.size() != columns) {throw std::invalid_argument("All rows must have the same length");}
 
-        data = new type*[rows];
-
+        data = new type*[rows]{};
         size_t i = 0;
-        for (const auto& row_list : init_list)
-        {
-            data[i] = new type[columns];
-            size_t j = 0;
-            for (const auto& value : row_list)
+
+        try {
+            for (const auto& row_list : init_list)
             {
-                data[i][j] = value;
-                j++;
+                data[i] = new type[columns];
+                size_t j = 0;
+                for (const auto& value : row_list)
+                {
+                    data[i][j] = value;
+                    j++;
+                }
+                i++;
             }
-            i++;
         }
+        catch (...) {
+            for (size_t k = 0; k < rows; k++){delete [] data[k];}
+            delete [] data;
+            data = nullptr;
+            throw;
+        }
+
     }
 
     //constructor
-    Matrix(size_t columns, size_t rows, type** init_data = {}) : columns(columns), rows(rows), det_coef(1)
+    Matrix(size_t columns, size_t rows, type** init_data = {}) : columns(columns), rows(rows), data(nullptr), det_coef(1)
     {
-        data = new type*[rows];
+        data = new type*[rows]{};
 
-        if (init_data != nullptr)
-        {
-            for (size_t i = 0; i < rows; i++)
+        try {
+            if (init_data != nullptr)
             {
-                data[i] = new type[columns];
-                for (size_t j = 0; j < columns; j++)
+                for (size_t i = 0; i < rows; i++)
                 {
-                    data[i][j] = init_data[i][j];
+                    data[i] = new type[columns];
+                    for (size_t j = 0; j < columns; j++)
+                    {
+                        data[i][j] = init_data[i][j];
+                    }
+                }
+            }
+            else
+            {
+                for (size_t g = 0; g < rows; g++)
+                {
+                    data[g] = new type[columns]{};
                 }
             }
         }
-
-        else
-        {
-            for (size_t i = 0; i < rows; i++)
-            {
-                data[i] = new type[columns]{};
-            }
+        catch (...) {
+            for (size_t k = 0; k < rows; k++){delete [] data[k];}
+            delete [] data;
+            data = nullptr;
+            throw;
         }
     }
 
     //copy constructor
     Matrix(const Matrix& original_matrix) : columns(original_matrix.columns), rows(original_matrix.rows), det_coef(1)
     {
-        data = new type*[rows];
+        data = new type*[rows]{};
 
-        for (size_t i = 0; i < rows; i++)
-        {
-            data[i] = new type[columns]{};
+        try {
+            for (size_t i = 0; i < rows; i++)
+            {
+                data[i] = new type[columns]{};
 
-            std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
+                std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
+            }
+        }
+        catch (...) {
+            for (size_t j = 0; j < rows; j++){delete [] data[j];}
+            delete [] data;
+            data = nullptr;
+            throw;
         }
     }
 
     //move constructor
-    Matrix(Matrix&& original_matrix) noexcept : columns(original_matrix.columns), rows(original_matrix.rows), data(original_matrix.data), det_coef(1)
+    Matrix(Matrix&& original_matrix) noexcept : columns(0), rows(0), data(nullptr), det_coef(1)
     {
-        original_matrix.data    = nullptr;
-        original_matrix.columns = 0;
-        original_matrix.rows    = 0;
+        swap(original_matrix);
     }
 
     //copy assignment
     Matrix& operator=(const Matrix& original_matrix)
     {
-        if ((original_matrix.columns == columns) &&
-            (original_matrix.rows    == rows)    &&
-            (this                    != &original_matrix))
-
-            for (size_t i = 0; i < rows; i++)
-            {
-                std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
-            }
-
-        else
+        if (this != &original_matrix)
         {
-            std::cerr << "Error in copy assignment!" << std::endl;
+            // for (size_t i = 0; i < rows; i++)
+            // {
+            //     std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
+            // }
+            Matrix clone(original_matrix);
+            swap(clone);
         }
 
         return *this;
@@ -118,20 +136,9 @@ public:
     //move assignment
     Matrix& operator=(Matrix&& original_matrix) noexcept
     {
-        if ((original_matrix.columns == this->columns) &&
-            (original_matrix.rows    == this->rows)    &&
-            (this                    != &original_matrix))
+        if (this != &original_matrix)
         {
-            data = original_matrix.data;
-
-            original_matrix.data    = nullptr;
-            original_matrix.columns = 0;
-            original_matrix.rows    = 0;
-        }
-
-        else
-        {
-            std::cerr << "Error in move assignment!" << std::endl;
+            swap(original_matrix);
         }
 
         return *this;
@@ -140,12 +147,23 @@ public:
     //destructor
     ~Matrix()
     {
-        for (size_t i = 0; i < rows; i++)
+        if (data)
         {
-            delete [] data[i];
+            for (size_t i = 0; i < rows; i++)
+            {
+                delete [] data[i];
+            }
         }
 
         delete [] data;
+    }
+
+    void swap(Matrix& original_matrix) noexcept
+    {
+        std::swap(columns , original_matrix.columns );
+        std::swap(rows    , original_matrix.rows    );
+        std::swap(data    , original_matrix.data    );
+        std::swap(det_coef, original_matrix.det_coef);
     }
 
     type determinant ();
