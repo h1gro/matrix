@@ -31,15 +31,19 @@ endif
 
 LDFLAGS = -lgtest -lgtest_main -lpthread
 
-all: matrix matrix_tests
+all: matrix unit e2e
 
 matrix: src/matrix.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) src/matrix.cpp -o $(BUILD_DIR)/matrix
 
-matrix_tests: src/matrix_tests.cpp include/matrix.hpp
+unit: tests/unit_tests.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) src/matrix_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/matrix_tests
+	$(CXX) $(CXXFLAGS) tests/unit_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/unit_tests
+
+e2e: tests/e2e_tests.cpp include/utilits.hpp include/matrix.hpp
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) tests/e2e_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/e2e_tests
 
 debug:
 	$(MAKE) CONFIG=debug
@@ -48,4 +52,4 @@ release:
 	$(MAKE) CONFIG=release
 
 clean:
-	rm -rf $(BUILD)/debug/matrix $(BUILD)/debug/matrix_tests $(BUILD)/release/matrix $(BUILD)/release/matrix_tests
+	rm -rf $(BUILD)/debug/matrix $(BUILD)/debug/unit_tests $(BUILD)/debug/e2e_tests $(BUILD)/release/matrix $(BUILD)/release/unit_tests $(BUILD)/release/e2e_tests
