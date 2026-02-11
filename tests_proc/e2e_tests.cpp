@@ -1,7 +1,14 @@
 #include <iostream>
+#include <fstream>
 #include <gtest/gtest.h>
 #include "../include/matrix.hpp"
 #include "../include/utilits.hpp"
+
+namespace e2e_tests
+{
+
+const char* TEST_FILE_1 = "tests_proc/tests/001.dat";
+const char* TEST_FILE_2 = "tests_proc/tests/002.dat";
 
 TEST (MatrixAlgebraTest, Determinant_1x1)
 {
@@ -377,4 +384,39 @@ TEST(MatrixAlgebraTest, Determinant_1000x1000_E)
     }
     //EXPECT_EQ(matrix.determinant(), 1);
     EXPECT_NEAR(matrix.determinant(), 1, 1e-6);
+}
+
+TEST(MatrixAlgebraTest, Determinant_2x2_001dat)
+{
+    std::ifstream test(TEST_FILE_1);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    matrix.print_matrix();
+
+    EXPECT_NEAR(matrix.determinant(), -1, 1e-6);
+}
+
+TEST(MatrixAlgebraTest, Determinant_100x100_002dat)
+{
+    std::ifstream test(TEST_FILE_2);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 42, 1e-6);
+}
 }

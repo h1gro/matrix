@@ -37,13 +37,13 @@ matrix: src/matrix.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) src/matrix.cpp -o $(BUILD_DIR)/matrix
 
-unit: tests/unit_tests.cpp include/utilits.hpp include/matrix.hpp
+unit: tests_proc/unit_tests.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) tests/unit_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/unit_tests
+	$(CXX) $(CXXFLAGS) tests_proc/unit_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/unit_tests
 
-e2e: tests/e2e_tests.cpp include/utilits.hpp include/matrix.hpp
+e2e: tests_proc/e2e_tests.cpp include/utilits.hpp include/matrix.hpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) tests/e2e_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/e2e_tests
+	$(CXX) $(CXXFLAGS) tests_proc/e2e_tests.cpp $(LDFLAGS) -o $(BUILD_DIR)/e2e_tests
 
 debug:
 	$(MAKE) CONFIG=debug

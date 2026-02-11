@@ -46,6 +46,24 @@ void filling_matrix(const Matrix<type>& matrix)
 }
 
 template <typename type>
+void filling_matrix_from_file(Matrix<type>& matrix, std::istream& file)
+{
+    type** data = matrix.get_data();
+    assert(data != nullptr);
+
+    size_t columns = matrix.get_columns();
+    size_t rows    = matrix.get_rows();
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < columns; j++)
+        {
+            file >> data[i][j];
+        }
+    }
+}
+
+template <typename type>
 bool is_matrices_equal(const Matrix<type>& matrix1, const Matrix<type>& matrix2)
 {
     type** data1 = matrix1.get_data();

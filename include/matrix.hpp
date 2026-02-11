@@ -7,6 +7,7 @@
 
 namespace matrix
 {
+
 template<typename type>
 constexpr type EPS()
 {
@@ -22,6 +23,24 @@ private:
     type** data;
     type   det_coef;
 
+    struct RowsGuard
+    {
+        type** data;
+        size_t rows;
+
+        ~RowsGuard() noexcept {
+            if (!data) {return;}
+            for (size_t i = 0; i < rows; ++i)
+            {
+                delete[] data[i];
+            }
+            delete[] data;
+        }
+
+        void release() noexcept {data = nullptr; rows = 0;}
+    };
+
+
 public:
 
     //constructor with initializer list
@@ -33,82 +52,75 @@ public:
             if (row.size() != columns) {throw std::invalid_argument("All rows must have the same length");}
 
         data = new type*[rows]{};
+        RowsGuard guard{data, rows};
         size_t i = 0;
 
-        try {
-            for (const auto& row_list : init_list)
+        for (const auto& row_list : init_list)
+        {
+            data[i] = new type[columns];
+            size_t j = 0;
+            for (const auto& value : row_list)
             {
-                data[i] = new type[columns];
-                size_t j = 0;
-                for (const auto& value : row_list)
-                {
-                    data[i][j] = value;
-                    j++;
-                }
-                i++;
+                data[i][j] = value;
+                j++;
             }
-        }
-        catch (...) {
-            for (size_t k = 0; k < rows; k++){delete [] data[k];}
-            delete [] data;
-            data = nullptr;
-            throw;
+            i++;
         }
 
+        guard.release();
     }
 
     //constructor
     Matrix(size_t columns, size_t rows, type** init_data = {}) : columns(columns), rows(rows), data(nullptr), det_coef(1)
     {
-        data = new type*[rows]{};
+        if ((columns == 0) || (rows == 0))
+        {
+            throw std::invalid_argument("Invalid matrixes size!");
+        }
 
-        try {
-            if (init_data != nullptr)
+        data = new type*[rows]{};
+        RowsGuard guard{data, rows};
+
+        if (init_data != nullptr)
+        {
+            for (size_t i = 0; i < rows; i++)
             {
-                for (size_t i = 0; i < rows; i++)
+                if (!init_data[i])
                 {
-                    data[i] = new type[columns];
-                    for (size_t j = 0; j < columns; j++)
-                    {
-                        data[i][j] = init_data[i][j];
-                    }
+                    throw std::invalid_argument("Invalid memory!");
                 }
-            }
-            else
-            {
-                for (size_t g = 0; g < rows; g++)
+
+                data[i] = new type[columns];
+                for (size_t j = 0; j < columns; j++)
                 {
-                    data[g] = new type[columns]{};
+                    data[i][j] = init_data[i][j];
                 }
             }
         }
-        catch (...) {
-            for (size_t k = 0; k < rows; k++){delete [] data[k];}
-            delete [] data;
-            data = nullptr;
-            throw;
+        else
+        {
+            for (size_t g = 0; g < rows; g++)
+            {
+                data[g] = new type[columns]{};
+            }
         }
+
+        guard.release();
     }
 
     //copy constructor
     Matrix(const Matrix& original_matrix) : columns(original_matrix.columns), rows(original_matrix.rows), det_coef(1)
     {
         data = new type*[rows]{};
+        RowsGuard guard{data, rows};
 
-        try {
-            for (size_t i = 0; i < rows; i++)
-            {
-                data[i] = new type[columns]{};
+        for (size_t i = 0; i < rows; i++)
+        {
+            data[i] = new type[columns]{};
 
-                std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
-            }
+            std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
         }
-        catch (...) {
-            for (size_t j = 0; j < rows; j++){delete [] data[j];}
-            delete [] data;
-            data = nullptr;
-            throw;
-        }
+        guard.release();
     }
 
     //move constructor
@@ -122,10 +134,6 @@ public:
     {
         if (this != &original_matrix)
         {
-            // for (size_t i = 0; i < rows; i++)
-            // {
-            //     std::copy(original_matrix.data[i], original_matrix.data[i] + columns, data[i]);
-            // }
             Matrix clone(original_matrix);
             swap(clone);
         }
@@ -193,6 +201,11 @@ private:
 template <typename type>
 type Matrix<type>::determinant()
 {
+    if (!is_matrix_square())
+    {
+        throw std::domain_error("The matrix is not square!");
+    }
+
     Matrix copy_matrix(*this);
 
     copy_matrix.StraightGaussAlgorithm();
@@ -327,8 +340,7 @@ type Matrix<type>::diagonal_determinant()
 
     if (!is_matrix_square())
     {
-        std::cerr << "The matrix is not square!" << std::endl;
-        return 0;
+        throw std::domain_error("The matrix is not square!");
     }
 
     type determinant = 1;
@@ -354,6 +366,11 @@ bool Matrix<type>::is_matrix_square() const
 template <typename type>
 void Matrix<type>::print_matrix() const
 {
+    if (!data)
+    {
+        throw std::logic_error("Matrix storage is null");
+    }
+
     for (size_t i = 0; i < rows; i++)
     {
         for (size_t j = 0; j < columns; j++)
