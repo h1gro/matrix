@@ -9,6 +9,8 @@ namespace e2e_tests
 
 const char* TEST_FILE_1 = "tests_proc/tests/001.dat";
 const char* TEST_FILE_2 = "tests_proc/tests/002.dat";
+const char* TEST_FILE_3 = "tests_proc/tests/003.dat";
+const char* TEST_FILE_4 = "tests_proc/tests/004.dat";
 
 TEST (MatrixAlgebraTest, Determinant_1x1)
 {
@@ -419,4 +421,37 @@ TEST(MatrixAlgebraTest, Determinant_100x100_002dat)
 
     EXPECT_NEAR(matrix.determinant(), 42, 1e-6);
 }
+
+TEST(MatrixAlgebraTest, Determinant_100x100_003dat)
+{
+    std::ifstream test(TEST_FILE_3);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 1, 1e-6);
+}
+
+TEST(MatrixAlgebraTest, Determinant_100x100_004dat)
+{
+    std::ifstream test(TEST_FILE_4);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 137, 1e-6);
+}
+
 }
