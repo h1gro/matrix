@@ -9,12 +9,59 @@ enum test_values
     TEST_ROWS    = 3,
 };
 
+//================================================================
+//                   Tests for BIG-5:
+
 TEST (MatrixInterfaceTest, Constructor)
 {
     matrix::Matrix<long double> matrix(TEST_COLUMNS, TEST_ROWS);
 
     EXPECT_EQ(matrix.get_columns(), TEST_COLUMNS);
-    EXPECT_EQ(matrix.get_rows(), TEST_ROWS);
+    EXPECT_EQ(matrix.get_rows(),    TEST_ROWS);
+    EXPECT_NE(matrix.get_data(),    nullptr);
+}
+
+TEST(MatrixInterfaceTest, Destructor_ScopeExit_NoCrash)
+{
+    //own scope
+    {
+        matrix::Matrix<long double> matrix(200, 200);
+        auto** data = matrix.get_data();
+
+        data[153][77] = 1;
+        data[77][153] = 2;
+    } // leave current scope, so the matrix are being destroyed (~Matrix())
+
+    //if we successfully leave the scope - all right
+    SUCCEED();
+}
+
+TEST(MatrixInterfaceTest, Destructor_AfterMoveConstructor_NoCrash)
+{
+    {
+        matrix::Matrix<long double> matrix(555, 678);
+        matrix::Matrix<long double> move_matrix(std::move(matrix));
+
+        EXPECT_EQ(move_matrix.get_columns(), 555);
+        EXPECT_EQ(move_matrix.get_rows(),    678);
+        EXPECT_NE(move_matrix.get_data(),    nullptr);
+    } //similarly previous test
+    SUCCEED();
+}
+
+TEST(MatrixInterfaceTest, Destructor_AfterMoveAssignment_NoCrash)
+{
+    {
+        matrix::Matrix<long double> matrix(11, 11);
+        matrix::Matrix<long double> move_matrix(10, 10);
+
+        move_matrix = std::move(matrix);
+
+        EXPECT_EQ(move_matrix.get_columns(), 11);
+        EXPECT_EQ(move_matrix.get_rows(),    11);
+        EXPECT_NE(move_matrix.get_data(),    nullptr);
+    } //similarly previous test
+    SUCCEED();
 }
 
 TEST (MatrixInterfaceTest, CopyConstructor)
@@ -70,13 +117,7 @@ TEST (MatrixInterfaceTest, MoveAssignment)
     EXPECT_EQ(matrix2.get_rows(),    TEST_ROWS);
 }
 
-//TODO Exception
-// TEST (MatrixExceptionTest, Constructor)
-// {
-//     matrix::Matrix<long double> matrix(2, 2);
-//
-//     EXPECT_EQ(matrix.get_columns(), 2);
-// }
+//====================================================================
 
 TEST (MatrixAlgebraTest, MatricesSum)
 {
