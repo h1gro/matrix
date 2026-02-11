@@ -523,23 +523,20 @@ TEST(MatrixAlgebraTest, Determinant_500x500_008dat)
     EXPECT_NEAR(matrix.determinant(), 157, 1e-6);
 }
 
-// TEST(MatrixAlgebraTest, Determinant_500x500_009dat)
-// {
-//     std::ifstream test(TEST_FILE_9);
-//
-//     size_t size = 0;
-//     test >> size;
-//
-//     matrix::Matrix<long double> matrix(size, size);
-//
-//     filling_matrix_from_file(matrix, test);
-//
-//     test.close();
-//
-//     std::cout << matrix.determinant() << std::endl;
-//
-//     //EXPECT_NEAR(matrix.determinant(), 173, 1e-6);
-// }
+TEST(MatrixAlgebraTest, Determinant_500x500_009dat)
+{
+    std::ifstream test(TEST_FILE_9);
 
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 173, 1e-6);
+}
 
 }
