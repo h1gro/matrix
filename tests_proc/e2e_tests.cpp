@@ -13,6 +13,9 @@ const char* TEST_FILE_3 = "tests_proc/tests/003.dat";
 const char* TEST_FILE_4 = "tests_proc/tests/004.dat";
 const char* TEST_FILE_5 = "tests_proc/tests/005.dat";
 const char* TEST_FILE_6 = "tests_proc/tests/006.dat";
+const char* TEST_FILE_7 = "tests_proc/tests/007.dat";
+const char* TEST_FILE_8 = "tests_proc/tests/008.dat";
+const char* TEST_FILE_9 = "tests_proc/tests/009.dat";
 
 TEST (MatrixAlgebraTest, Determinant_1x1)
 {
@@ -487,5 +490,56 @@ TEST(MatrixAlgebraTest, Determinant_200x200_006dat)
 
     EXPECT_NEAR(matrix.determinant(), 157, 1e-6);
 }
+
+TEST(MatrixAlgebraTest, Determinant_200x200_007dat)
+{
+    std::ifstream test(TEST_FILE_7);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 199, 1e-6);
+}
+
+TEST(MatrixAlgebraTest, Determinant_500x500_008dat)
+{
+    std::ifstream test(TEST_FILE_8);
+
+    size_t size = 0;
+    test >> size;
+
+    matrix::Matrix<long double> matrix(size, size);
+
+    filling_matrix_from_file(matrix, test);
+
+    test.close();
+
+    EXPECT_NEAR(matrix.determinant(), 157, 1e-6);
+}
+
+// TEST(MatrixAlgebraTest, Determinant_500x500_009dat)
+// {
+//     std::ifstream test(TEST_FILE_9);
+//
+//     size_t size = 0;
+//     test >> size;
+//
+//     matrix::Matrix<long double> matrix(size, size);
+//
+//     filling_matrix_from_file(matrix, test);
+//
+//     test.close();
+//
+//     std::cout << matrix.determinant() << std::endl;
+//
+//     //EXPECT_NEAR(matrix.determinant(), 173, 1e-6);
+// }
+
 
 }
